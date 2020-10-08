@@ -5,8 +5,13 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import com.batzalcancia.hiltsample.data.paging.JokesPaging
 import com.batzalcancia.hiltsample.domain.entities.Joke
+import com.batzalcancia.hiltsample.domain.usecases.GetJokes
 import com.batzalcancia.hiltsample.domain.usecases.GetRandomJoke
+import com.batzalcancia.hiltsample.utils.UiState
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,12 +22,24 @@ class JokesViewModel
 @ViewModelInject
 constructor(
     private val getRandomJoke: GetRandomJoke,
+    private val getJokes: GetJokes,
     @Assisted private val savedStateHandle: SavedStateHandle
-): ViewModel() {
+) : ViewModel() {
 
     val jokesState = MutableStateFlow<UiState>(UiState.Loading)
     val joke = MutableStateFlow<Joke?>(null)
 
+    private val config = PagingConfig(
+        pageSize = 5,
+        enablePlaceholders = false,
+        initialLoadSize = 5
+    )
+    val pagingData = Pager(
+        config = config,
+        initialKey = Pair(0, 5)
+    ) {
+        JokesPaging(getJokes)
+    }.flow
 
     init {
         viewModelScope.launch(CoroutineExceptionHandler { _, throwable ->
@@ -30,17 +47,8 @@ constructor(
         }) {
             jokesState.value = UiState.Loading
             joke.value = getRandomJoke()
-            println("HAHAHAAHA+${joke.value}")
             jokesState.value = UiState.Complete
         }
     }
-
-}
-
-
-sealed class UiState {
-    object Loading: UiState()
-    object Complete: UiState()
-    class Error(val throwable: Throwable) : UiState()
 
 }

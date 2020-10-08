@@ -4,7 +4,6 @@ import com.batzalcancia.hiltsample.domain.entities.Joke
 import com.batzalcancia.hiltsample.domain.repositories.JokesRepository
 import javax.inject.Inject
 
-class GetRandomJoke @Inject constructor(private val jokesRepository: JokesRepository) {
-    suspend operator fun invoke() = jokesRepository.getRandomJoke()
-
+class GetJokes @Inject constructor(private val jokesRepository: JokesRepository) {
+    suspend operator fun invoke(idRange: String) = jokesRepository.getJokes(idRange).jokes
 }
