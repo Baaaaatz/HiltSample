@@ -7,10 +7,10 @@ import retrofit2.http.Query
 
 interface JokesApi {
 
-    @GET("any")
+    @GET("Any")
     suspend fun getRandomJoke(): Joke
 
-    @GET("any")
+    @GET("Any")
     suspend fun getJokes(
         @Query("idRange") idRange: String,
         @Query("amount") amount: Int = 5,

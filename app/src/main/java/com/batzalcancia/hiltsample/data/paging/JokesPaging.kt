@@ -16,7 +16,7 @@ class JokesPaging @Inject constructor(private val getJokes: GetJokes) :
             val response = getJokes("$from-$to")
 
             LoadResult.Page(
-                data = if(from < 0 || to <0) emptyList() else response,
+                data = response,
                 prevKey = Pair(from - 6, to - 6),
                 nextKey = Pair(from + 6, to + 6)
             )
